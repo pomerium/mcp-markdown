@@ -10,12 +10,14 @@ import os
 import re
 import sys
 import threading
-from typing import Literal
 
 import anyio
 import structlog
 from fastmcp import Context, FastMCP
 from fastmcp.exceptions import ToolError
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 # Configure structlog for clean console output
 structlog.configure(
@@ -307,7 +309,44 @@ def extract_bearer_token(ctx: Context) -> str | None:
         return None
 
 
-mcp: FastMCP = FastMCP("mcp-markdown-server")
+class MCPPathRewriteMiddleware:
+    """
+    Middleware to rewrite /mcp requests to /mcp/ to avoid 307 redirects.
+
+    This fixes the issue where FastMCP's Mount routing expects a trailing slash
+    but clients might send requests without it, causing Starlette to return
+    307 Temporary Redirect responses.
+    """
+
+    def __init__(self, app: ASGIApp, mcp_path: str = "/mcp"):
+        self.app = app
+        self.mcp_path = mcp_path
+        self.mcp_path_with_slash = mcp_path + "/"
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            path = scope["path"]
+
+            if path == self.mcp_path:
+                scope["path"] = self.mcp_path_with_slash
+                logger.debug(
+                    f"Rewriting path from {self.mcp_path} to {self.mcp_path_with_slash}"
+                )
+
+        await self.app(scope, receive, send)
+
+
+mcp: FastMCP = FastMCP(
+    "mcp-markdown-server",
+    streamable_http_path="/mcp",
+    stateless_http=True,
+)
+
+
+@mcp.custom_route("/health", methods=["GET"])  # type: ignore[misc]
+async def health_check(request: Request) -> JSONResponse:
+    """Health check endpoint for monitoring and load balancing"""
+    return JSONResponse({"status": "healthy", "service": "mcp-markdown-server"})
 
 
 @mcp.tool()
@@ -389,41 +428,31 @@ if __name__ == "__main__":
     host = os.getenv("HOST", "localhost")
     port = int(os.getenv("PORT", 8000))
     log_level = os.getenv("LOG_LEVEL", "INFO")
-    transport = os.getenv("TRANSPORT", "http")
-
-    # Cast transport to the correct literal type
-    valid_transports: set[str] = {"stdio", "http", "sse", "streamable-http"}
-    if transport not in valid_transports:
-        logger.error(
-            f"Invalid transport: {transport}. Must be one of {valid_transports}"
-        )
-        sys.exit(1)
-
-    transport_typed: Literal["stdio", "http", "sse", "streamable-http"] = transport  # type: ignore
 
     logger.info(
         "Starting FastMCP Markdown server",
         host=host,
         port=port,
         log_level=log_level,
-        transport=transport,
+        transport="streamable-http",
     )
-    logger.info("Authentication: Bearer token extracted from Authorization header")
 
     logger.info("Server provides the following tools")
     logger.info(
         "Tool available: convert_to_markdown - Convert Google Drive URLs to markdown"
     )
+    logger.info(f"Endpoint: http://{host}:{port}/mcp")
+    logger.info("Authentication: Bearer token in Authorization header")
 
-    if transport == "http":
-        logger.info("Server configuration", transport=transport, host=host, port=port)
-        logger.info(f"Endpoint: http://{host}:{port}/mcp")
-        logger.info("Authentication: Bearer token in Authorization header")
+    from starlette.middleware import Middleware
+
+    middleware = [Middleware(MCPPathRewriteMiddleware, mcp_path="/mcp")]
 
     mcp.run(
-        transport=transport_typed,
+        transport="streamable-http",
         host=host,
         port=port,
         log_level=log_level.lower(),
         stateless_http=True,
+        middleware=middleware,
     )
