@@ -1,0 +1,6 @@
+[bandit]
+exclude_dirs = venv,build,dist,.git,__pycache__,.mypy_cache,.ruff_cache,.pytest_cache
+# Skip test-related security warnings that are false positives
+skips = B101,B105
+# B101: assert_used - Allow assert statements (common in tests)
+# B105: hardcoded_password_string - Allow hardcoded test credentials

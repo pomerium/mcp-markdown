@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "FastMCP Documentation": {
+        "type": "stdio",
+        "command": "uvx",
+        "args": [
+            "--from",
+            "mcpdoc",
+            "mcpdoc",
+            "--urls",
+            "FastMCP:https://gofastmcp.com/llms.txt",
+            "--transport",
+            "stdio"
+        ]
+    }
+  }
+}
