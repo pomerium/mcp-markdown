@@ -310,7 +310,7 @@ def extract_bearer_token(ctx: Context) -> str | None:
 mcp: FastMCP = FastMCP("mcp-markdown-server")
 
 
-@mcp.tool()  # type: ignore[misc]
+@mcp.tool()
 async def convert_to_markdown(ctx: Context, url: str) -> str:
     """
     Read the contents of a file from Google Drive. Supports URLs matching patterns:

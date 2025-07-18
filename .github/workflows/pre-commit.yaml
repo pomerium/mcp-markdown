@@ -14,5 +14,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies and run pre-commit
+      - name: Install dependencies
+        run: make install
+
+      - name: Run pre-commit
         run: make pre-commit
