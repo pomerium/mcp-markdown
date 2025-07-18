@@ -212,7 +212,7 @@ class GoogleDriveService:
                 file_id=file_id,
                 traceback=traceback.format_exc(),
             )
-            raise e
+            raise
 
     async def _send_periodic_progress(
         self, ctx: Context, stop_event: threading.Event

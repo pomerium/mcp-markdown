@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "MCP Server for converting Google Drive URLs to Markdown"
 authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
-packages = [{include = "mcp_markdown"}]
+# Removed packages configuration as the project is a single-file module.
 
 [tool.poetry.dependencies]
 python = "^3.11"
