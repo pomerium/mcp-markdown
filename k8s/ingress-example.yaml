@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-markdown
+  labels:
+    name: mcp-markdown
+  annotations:
+    ingress.pomerium.io/name: 'Markdown'
+    ingress.pomerium.io/mcp_server_path: '/mcp/'
+    ingress.pomerium.io/mcp_server_upstream_oauth2_secret: 'gdrive-oauth2-secret'
+    ingress.pomerium.io/mcp_server_upstream_oauth2_auth_url: "https://accounts.google.com/o/oauth2/v2/auth"
+    ingress.pomerium.io/mcp_server_upstream_oauth2_token_url: "https://oauth2.googleapis.com/token"
+    ingress.pomerium.io/mcp_server_upstream_oauth2_scopes: 'https://www.googleapis.com/auth/drive.readonly'
+    ingress.pomerium.io/timeout: '2m'
+    ingress.pomerium.io/policy: |
+      allow:
+        and:
+          - domain:
+              is: YOUR-DOMAIN.com
+    # *** Replace YOUR-DOMAIN.com with your actual domain ***
+spec:
+  ingressClassName: pomerium
+  rules:
+    # *** Replace YOUR-DOMAIN.com with your actual domain ***
+  - host: mcp-markdown.YOUR-DOMAIN.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: mcp-markdown
+            port:
+              name: http
