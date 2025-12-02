@@ -47,7 +47,7 @@ jsonschema-specifications==2025.4.1
 keyring==25.7.0
 markdown-it-py==3.0.0
 mccabe==0.7.0
-mcp==1.21.2
+mcp==1.23.0
 mdurl==0.1.2
 more-itertools==10.8.0
 mypy==1.17.0
