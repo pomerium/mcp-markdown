@@ -50,7 +50,7 @@ mccabe==0.7.0
 mcp==1.23.0
 mdurl==0.1.2
 more-itertools==10.8.0
-mypy==1.17.0
+mypy==1.19.1
 mypy_extensions==1.1.0
 nodeenv==1.9.1
 oauthlib==3.3.1
