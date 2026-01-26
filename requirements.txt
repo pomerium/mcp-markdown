@@ -64,7 +64,7 @@ platformdirs==4.3.8
 pluggy==1.6.0
 pre_commit==4.2.0
 proto-plus==1.26.1
-protobuf==6.31.1
+protobuf==7.34.0rc1
 py-key-value-aio==0.3.0
 py-key-value-shared==0.3.0
 pyasn1==0.6.2
@@ -82,7 +82,7 @@ pyperclip==1.9.0
 pytest==8.4.1
 pytest-asyncio==1.1.0
 python-dotenv==1.1.1
-python-multipart==0.0.20
+python-multipart==0.0.22
 PyYAML==6.0.2
 referencing==0.36.2
 requests==2.32.4
