@@ -70,7 +70,7 @@ py-key-value-shared==0.3.0
 pyasn1==0.6.2
 pyasn1_modules==0.4.2
 pycodestyle==2.14.0
-pycparser==2.22
+pycparser==3.0
 pydantic==2.11.7
 pydantic-settings==2.12.0
 pydantic_core==2.33.2
