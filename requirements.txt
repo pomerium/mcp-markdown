@@ -55,7 +55,7 @@ mypy_extensions==1.1.0
 nodeenv==1.9.1
 oauthlib==3.3.1
 openapi-pydantic==0.5.1
-packaging==25.0
+packaging==26.0
 pathable==0.4.4
 pathspec==0.12.1
 pathvalidate==3.3.1
